@@ -66,6 +66,9 @@ flutter:
     - assets/images/drizzle.png
     - assets/images/mist.png
     - assets/images/rain.png
+    - assets/images/navigation_1.png
+    - assets/images/navigation_2.png
+    - assets/images/navigation_3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

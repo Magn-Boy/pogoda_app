@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 
  LinearGradient backgroundGradientLight = LinearGradient(
-  colors: [Colors.white, Colors.grey],
-  begin: Alignment.topCenter,
+  colors: [Colors.orange[500]!, Colors.orange[100]!],
+  begin: Alignment.topLeft,
   end: Alignment.bottomCenter,
-  stops: [0.0, 0.6],
+  stops: [0.0, 1.0],
 );
 
 LinearGradient backgroundGradientDark = LinearGradient(
-  colors: [Colors.grey[800]!,
-  Colors.grey[850]!,
-  Colors.grey[900]!
+  colors: [ const Color.fromRGBO(68, 61, 100, 1), 
+  Color.fromARGB(255, 159, 152, 192)
   ],
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
-  stops: [0.4, 0.7, 0.9],
+  stops: [0.0,1.0],
 );
 
 ThemeData darkTheme = ThemeData(
