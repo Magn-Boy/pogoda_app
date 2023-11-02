@@ -33,7 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(
               Icons.location_on_outlined,
-              color: Colors.black54,
+              color: _themeManager.themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.black,
             ),
             onPressed: () {},
           ),
@@ -60,7 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 labelText: 'Search for your preferred city',
                 labelStyle: TextStyle(
                   fontSize: 15,
-                  color: Colors.black,
+                  color: _themeManager.themeMode == ThemeMode.dark
+            ? Colors.white
+            : Colors.black,
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
               ),
@@ -85,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     "Athens",
                     style: TextStyle(
-                        color: Colors.black,
                         fontSize: 25,
                         fontWeight: FontWeight.w700),
                   ),
@@ -93,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     "09:03",
                     style: TextStyle(
-                      color: Colors.black,
                       fontSize: 60,
                       fontWeight: FontWeight.w700,
                     ),
@@ -101,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(height: 1),
                   Text(
                     "Thursday, 31 Aug",
-                    style: TextStyle(color: Colors.black, fontSize: 15),
+                    style: TextStyle(fontSize: 15),
                   ),
                 ]),
               ),
@@ -121,7 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           "5 Days Forecast:",
                           style: TextStyle(
-                              color: Colors.black,
                               fontSize: 25,
                               fontWeight: FontWeight.w700),
                         ),
@@ -277,7 +278,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     "Hourly Forecast:",
                     style: TextStyle(
-                        color: Colors.black,
                         fontSize: 25,
                         fontWeight: FontWeight.w700),
                   ),
