@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pogoda_app/Api/auth.dart';
 import 'package:provider/provider.dart';
 
 import 'Theme/theme_cobstant.dart';
@@ -21,7 +22,20 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: Provider.of<ThemeManager>(context).themeMode,
-      home: HomeScreen(),
+      home: AuthScreen(),
+       routes: {
+        '/auth': (context) => AuthScreen(),
+        '/home': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments;
+          if (arguments is String) {
+            return HomeScreen(token: arguments);
+          }
+          // Handle the case when arguments is not a String (or null) here.
+          // You can return an appropriate widget or handle the error as needed.
+          return Container();
+        },
+      },
+      initialRoute: '/auth',
     );
   }
 } 

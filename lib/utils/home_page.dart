@@ -3,17 +3,61 @@ import 'package:pogoda_app/Theme/theme_cobstant.dart';
 import 'package:pogoda_app/widgets/switch_widget.dart';
 import 'package:provider/provider.dart';
 import '../Theme/theme_manager.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
+  final String token;
+
+  HomeScreen({required this.token});
+ 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String token = '';
+  double _temperature = 0.0;
+Future<void> fetchWeather() async {
+  try {
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ${widget.token}',
+    };
+
+    final response = await http.get(
+      Uri.parse('http://172.18.0.3:8080/getCurrentWeather?city=minsk'),
+      headers: headers, // Добавляем заголовок с токеном
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if(data['main']['temp'] != null){
+        final temperature = data['main']['temp'].toDouble();
+      print(data);
+      setState(() {
+        _temperature = temperature;
+      });
+      }
+    } else {
+      print('HTTP request failed with status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  } catch (e) {
+    print('Error fetching weather data: $e');
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  fetchWeather();
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     ThemeManager _themeManager = Provider.of<ThemeManager>(context);
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: _themeManager.themeMode == ThemeMode.dark
@@ -69,8 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body: ListView(
+        children:[ Container(
           decoration: BoxDecoration(
           gradient: _themeManager.themeMode == ThemeMode.dark
             ? backgroundScaffoldGradiendDark
@@ -125,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      "09:03",
+                      '09:09',
                       style: TextStyle(
                         fontSize: 60,
                         fontWeight: FontWeight.w700,
@@ -199,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(width: 25),
                                 Expanded(
                                   child: Text(
-                                    "20°C",
+                                   '$_temperature°C',
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w700),
@@ -518,7 +562,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
+        ],
+      )
     );
   }
 }
