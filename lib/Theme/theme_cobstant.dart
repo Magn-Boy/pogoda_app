@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
- LinearGradient backgroundGradientLight = LinearGradient(
+LinearGradient backgroundGradientLight = LinearGradient(
   colors: [Colors.orange[500]!, Colors.orange[100]!],
   begin: Alignment.topLeft,
   end: Alignment.bottomCenter,
@@ -46,12 +46,11 @@ LinearGradient backgroundGradientl = LinearGradient(
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   scaffoldBackgroundColor: COLOR_THEME_DARK,
-  // Другие параметры темы
 );
 
 ThemeData lightTheme =
     ThemeData(brightness: Brightness.light,
-     primaryColor: COLOR_THEME_LIGHT
+    primaryColor: COLOR_THEME_LIGHT
 );
 
 const COLOR_THEME_DARK = Color(0xFF444444);

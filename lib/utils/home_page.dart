@@ -1,90 +1,37 @@
+import 'package:Wheather/Theme/text_style.dart';
+import 'package:Wheather/Theme/theme_cobstant.dart';
+import 'package:Wheather/media.dart';
+import 'package:Wheather/widgets/switch_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:pogoda_app/Theme/theme_cobstant.dart';
-import 'package:pogoda_app/widgets/switch_widget.dart';
 import 'package:provider/provider.dart';
 import '../Theme/theme_manager.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
-  final String token;
-
-  HomeScreen({required this.token});
- 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String token = '';
-  double _temperature = 0.0;
-Future<void> fetchWeather() async {
-  try {
-    final Map<String, String> headers = {
-      'Authorization': 'Bearer ${widget.token}',
-    };
-
-    final response = await http.get(
-      Uri.parse('http://172.18.0.3:8080/getCurrentWeather?city=minsk'),
-      headers: headers, // Добавляем заголовок с токеном
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if(data['main']['temp'] != null){
-        final temperature = data['main']['temp'].toDouble();
-      print(data);
-      setState(() {
-        _temperature = temperature;
-      });
-      }
-    } else {
-      print('HTTP request failed with status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-    }
-  } catch (e) {
-    print('Error fetching weather data: $e');
-  }
-}
-
-@override
-void initState() {
-  super.initState();
-  fetchWeather();
-}
-
-
-
   @override
   Widget build(BuildContext context) {
     ThemeManager _themeManager = Provider.of<ThemeManager>(context);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: _themeManager.themeMode == ThemeMode.dark
-             ? COLOR_THEME_DARK
-             : COLOR_THEME_LIGHT,
-        leading: SwitchWidget(
-          value: _themeManager.themeMode == ThemeMode.dark,
-          onChanged: (newValue) {
-            _themeManager.toggleTheme(newValue);
-          },
-        ),
-        toolbarHeight: 65,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.location_on_outlined,
-              color: _themeManager.themeMode == ThemeMode.dark
-            ? Colors.white
-            : Colors.black,
-            ),
-            onPressed: () {},
+        appBar: AppBar(
+          backgroundColor: _themeManager.themeMode == ThemeMode.dark
+              ? COLOR_THEME_DARK
+              : COLOR_THEME_LIGHT,
+          leading: SwitchWidget(
+            value: _themeManager.themeMode == ThemeMode.dark,
+            onChanged: (newValue) {
+              _themeManager.toggleTheme(newValue);
+            },
           ),
-        ],
-        flexibleSpace: Center(
-          child: Container(
-            padding: EdgeInsets.only(top: 35, bottom: 15, left: 70, right: 70),
+          title: Container(
+            width: Media.screenWidth / 1.37,
+            height: Media.screenHeight * 0.04,
             child: TextField(
+              textAlign: TextAlign.start,
+              textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(40.0),
@@ -94,476 +41,427 @@ void initState() {
                         : Colors.black,
                   ),
                 ),
-                contentPadding: EdgeInsets.only(
-                  top: 40,
-                  left: 12,
-                  right: 12,
-                  bottom: 8,
-                ),
                 labelText: 'Search for your preferred city',
                 labelStyle: TextStyle(
                   fontSize: 15,
                   color: _themeManager.themeMode == ThemeMode.dark
-                  ? Colors.white
-                  : Colors.black,
+                      ? Colors.white
+                      : Colors.black,
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
               ),
             ),
           ),
+          toolbarHeight: 65,
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.location_on_outlined,
+                color: _themeManager.themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
+              ),
+              onPressed: () {},
+            ),
+          ],
         ),
-      ),
-      body: ListView(
-        children:[ Container(
-          decoration: BoxDecoration(
-          gradient: _themeManager.themeMode == ThemeMode.dark
-            ? backgroundScaffoldGradiendDark
-            : backgroundScaffoldGradientLight,
-        ),
+        body: SingleChildScrollView(
+          physics: ClampingScrollPhysics(),
           child: Column(
             children: [
-              Center(
-                child: Container(
-                  margin: EdgeInsets.only(top: 20),
-                  width: 380,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_THEME_DARK
-                          : COLOR_THEME_LIGHT,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 0.4, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 8), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(8, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      )
-                    ],
-                  ),
-                  child: Column(children: [
-                    SizedBox(height: 30),
-                    Text(
-                      "Athens",
-                      style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      '09:09',
-                      style: TextStyle(
-                        fontSize: 60,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(height: 1),
-                    Text(
-                      "Thursday, 31 Aug",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ]),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: _themeManager.themeMode == ThemeMode.dark
+                      ? backgroundScaffoldGradiendDark
+                      : backgroundScaffoldGradientLight,
                 ),
-              ),
-              Center(
-                  child: Container(
-                      margin: EdgeInsets.only(top: 20),
-                      width: 380,
-                      height: 320,
-                      decoration: BoxDecoration(
-                        color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_THEME_DARK
-                          : COLOR_THEME_LIGHT,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 8), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 1.0, // Распространение тени
-                      ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(8, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 1.0, // Распространение тени
-                      )
-                    ],
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 5),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 20),
+                        width: Media.screenWidth / 1.08,
+                        height: Media.screenHeight / 3.99,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        decoration: BoxDecoration(
+                          color: _themeManager.themeMode == ThemeMode.dark
+                              ? COLOR_THEME_DARK
+                              : COLOR_THEME_LIGHT,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(0,
+                                  0), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 0.4, // Радиус размытия тени
+                              spreadRadius: 0.0, // Распространение тени
+                            ),
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(0,
+                                  8), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 4.0, // Радиус размытия тени
+                              spreadRadius: 0.0, // Распространение тени
+                            ),
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(8,
+                                  0), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 4.0, // Радиус размытия тени
+                              spreadRadius: 0.0, // Распространение тени
+                            )
+                          ],
+                        ),
+                        child: Column(children: [
                           Text(
-                            "5 Days Forecast:",
-                            style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w700),
+                            "Athens",
+                            style: TextStyles.TITLE_25_BOLD,
                           ),
-                          SizedBox(height: 5),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            child: Row(
+                          SizedBox(height: Media.screenHeight * 0.01),
+                          Text(
+                            '09:09',
+                            style: TextStyles.TITLE_60_BOLD,
+                          ),
+                          SizedBox(height: Media.screenHeight * 0.01),
+                          Text(
+                            "Thursday, 31 Aug",
+                            style: TextStyles.TITLE_15_BOLD,
+                          ),
+                        ]),
+                      ),
+                    ),
+                    Container(
+                        margin: EdgeInsets.only(top: 20),
+                        width: Media.screenWidth / 1.08,
+                        height: Media.screenHeight / 2.85,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _themeManager.themeMode == ThemeMode.dark
+                              ? COLOR_THEME_DARK
+                              : COLOR_THEME_LIGHT,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(0,
+                                  0), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 4.0, // Радиус размытия тени
+                              spreadRadius: 0.0, // Распространение тени
+                            ),
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(0,
+                                  8), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 4.0, // Радиус размытия тени
+                              spreadRadius: 1.0, // Распространение тени
+                            ),
+                            BoxShadow(
+                              color: _themeManager.themeMode == ThemeMode.dark
+                                  ? COLOR_BLOCK_DARK
+                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                              offset: Offset(8,
+                                  0), // Смещение тени по горизонтали и вертикали
+                              blurRadius: 4.0, // Радиус размытия тени
+                              spreadRadius: 1.0, // Распространение тени
+                            )
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              "5 Days Forecast:",
+                              style: TextStyles.TITLE_25_BOLD,
+                            ),
+                            Row(
                               children: [
                                 Image.asset(
                                   'assets/images/clouds.png',
                                   width: 45,
                                   height: 45,
                                 ),
-                                SizedBox(width: 25),
-                                Expanded(
-                                  child: Text(
-                                   '$_temperature°C',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                SizedBox(width: Media.screenWidth * 0.06),
+                                Text(
+                                  '23°C',
+                                  style: TextStyles.TITLE_18_BOLD,
                                 ),
+                                Spacer(),
                                 Text(
                                   "Friday, 1 Sep",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w700),
+                                  style: TextStyles.TITLE_18_BOLD,
                                 )
                               ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            child: Row(
+                            Row(
                               children: [
                                 Image.asset(
                                   'assets/images/mist.png',
                                   width: 45,
                                   height: 45,
                                 ),
-                                SizedBox(width: 25),
-                                Expanded(
-                                  child: Text(
-                                    "22°C",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                SizedBox(width: Media.screenWidth * 0.06),
+                                Text(
+                                  "22°C",
+                                  style: TextStyles.TITLE_18_BOLD,
                                 ),
+                                Spacer(),
                                 Text(
                                   "Saturday, 2 Sep",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w700),
+                                  style: TextStyles.TITLE_18_BOLD,
                                 )
                               ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            child: Row(
+                            Row(
                               children: [
                                 Image.asset(
                                   'assets/images/clear.png',
                                   width: 45,
                                   height: 45,
                                 ),
-                                SizedBox(width: 25),
-                                Expanded(
-                                  child: Text(
-                                    "27°C",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                SizedBox(width: Media.screenWidth * 0.06),
+                                Text(
+                                  "27°C",
+                                  style: TextStyles.TITLE_18_BOLD,
                                 ),
+                                Spacer(),
                                 Text(
                                   "Sunday, 3 Sep",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w700),
+                                  style: TextStyles.TITLE_18_BOLD,
                                 )
                               ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            child: Row(
+                            Row(
                               children: [
                                 Image.asset(
                                   'assets/images/drizzle.png',
                                   width: 45,
                                   height: 45,
                                 ),
-                                SizedBox(width: 25),
-                                Expanded(
-                                  child: Text(
-                                    "18°C",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                SizedBox(width: Media.screenWidth * 0.06),
+                                Text(
+                                  "18°C",
+                                  style: TextStyles.TITLE_18_BOLD,
                                 ),
+                                Spacer(),
                                 Text(
                                   "Monday, 4 Sep",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w700),
+                                  style: TextStyles.TITLE_18_BOLD,
                                 )
                               ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                            child: Row(
+                            Row(
                               children: [
                                 Image.asset(
                                   'assets/images/rain.png',
                                   width: 45,
                                   height: 45,
                                 ),
-                                SizedBox(width: 25),
-                                Expanded(
-                                  child: Text(
-                                    "16°C",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                SizedBox(width: Media.screenWidth * 0.06),
+                                Text(
+                                  "16°C",
+                                  style: TextStyles.TITLE_18_BOLD,
                                 ),
+                                Spacer(),
                                 Text(
                                   "Tuesday, 5 Sep",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.w700),
+                                  style: TextStyles.TITLE_18_BOLD,
                                 )
                               ],
                             ),
-                          ),
-                        ],
-                      ))),
-              Center(
-                child: Container(
-                  margin: EdgeInsets.only(top: 20),
-                  width: 380,
-                  height: 430,
-                  decoration: BoxDecoration(
+                          ],
+                        )),
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      width: Media.screenWidth / 1.08,
+                      height: Media.screenHeight / 1.83,
+                      decoration: BoxDecoration(
                         color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_THEME_DARK
-                          : COLOR_THEME_LIGHT,
+                            ? COLOR_THEME_DARK
+                            : COLOR_THEME_LIGHT,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 0.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
+                          BoxShadow(
+                            color: _themeManager.themeMode == ThemeMode.dark
+                                ? COLOR_BLOCK_DARK
+                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                            offset: Offset(0,
+                                0), // Смещение тени по горизонтали и вертикали
+                            blurRadius: 0.0, // Радиус размытия тени
+                            spreadRadius: 0.0, // Распространение тени
+                          ),
+                          BoxShadow(
+                            color: _themeManager.themeMode == ThemeMode.dark
+                                ? COLOR_BLOCK_DARK
+                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                            offset: Offset(0,
+                                8), // Смещение тени по горизонтали и вертикали
+                            blurRadius: 4.0, // Радиус размытия тени
+                            spreadRadius: 0.0, // Распространение тени
+                          ),
+                          BoxShadow(
+                            color: _themeManager.themeMode == ThemeMode.dark
+                                ? COLOR_BLOCK_DARK
+                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                            offset: Offset(8,
+                                0), // Смещение тени по горизонтали и вертикали
+                            blurRadius: 4.0, // Радиус размытия тени
+                            spreadRadius: 0.0, // Распространение тени
+                          )
+                        ],
                       ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(0, 8), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      ),
-                      BoxShadow(
-                      color: _themeManager.themeMode == ThemeMode.dark
-                          ? COLOR_BLOCK_DARK
-                          : COLOR_BLOCK_LIGHT, // Цвет тени
-                      offset: Offset(8, 0), // Смещение тени по горизонтали и вертикали
-                      blurRadius: 4.0, // Радиус размытия тени
-                      spreadRadius: 0.0, // Распространение тени
-                      )
-                    ],
-                      ),
-                  child: Column(children: [
+                      child: Column(children: [
+                        SizedBox(height: Media.screenHeight * 0.01),
+                        Text(
+                          "Hourly Forecast:",
+                          style: TextStyles.TITLE_25_BOLD,
+                        ),
+                        SizedBox(height: Media.screenHeight * 0.01),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: Media.screenWidth / 4.83,
+                              height: Media.screenHeight / 4.56,
+                              decoration: BoxDecoration(
+                                  gradient: _themeManager.themeMode ==
+                                          ThemeMode.dark
+                                      ? backgroundGradientl
+                                      : backgroundGradientLight,
+                                  borderRadius: BorderRadius.circular(26)),
+                              child: Column(children: [
+                                SizedBox(height: Media.screenHeight * 0.01),
+                                Text("12:00",
+                                    style: TextStyles.TITLE_16_BOLD),
+                                Image.asset('assets/images/clear.png',
+                                    width: 50, height: 50),
+                                Text("26°C", style: TextStyles.TITLE_14_BOLD),
+                                SizedBox(height: Media.screenHeight * 0.006),
+                                Image.asset('assets/images/navigation_1.png',
+                                    width: 35, height: 35),
+                                SizedBox(height: Media.screenHeight * 0.003),
+                                Text("3km/h",
+                                    style: TextStyles.TITLE_14_BOLD),
+                              ]),
+                            ),
+                            SizedBox(width: Media.screenWidth * 0.04),
+                            Container(
+                              width: Media.screenWidth / 4.83,
+                              height: Media.screenHeight / 4.56,
+                              decoration: BoxDecoration(
+                                  gradient:
+                                      _themeManager.themeMode == ThemeMode.dark
+                                          ? backgroundGradientl
+                                          : backgroundGradientLight,
+                                  borderRadius: BorderRadius.circular(26)),
+                              child: Column(children: [
+                                SizedBox(height: Media.screenHeight * 0.01),
+                                Text("15:00", style: TextStyles.TITLE_16_BOLD),
+                                Image.asset('assets/images/clear.png',
+                                    width: 50, height: 50),
+                                Text("27°C", style: TextStyles.TITLE_14_BOLD),
+                                Image.asset('assets/images/navigation_2.png',
+                                    width: 43, height: 43),
+                                Text("2km/h", style: TextStyles.TITLE_14_BOLD),
+                              ]),
+                            ),
+                            SizedBox(width: Media.screenWidth * 0.04),
+                            Container(
+                              width: Media.screenWidth / 4.83,
+                              height: Media.screenHeight / 4.56,
+                              decoration: BoxDecoration(
+                                  gradient: _themeManager.themeMode ==
+                                          ThemeMode.dark
+                                      ? backgroundGradientl
+                                      : backgroundGradientLight,
+                                  borderRadius: BorderRadius.circular(26)),
+                              child: Column(children: [
+                                SizedBox(height: Media.screenHeight * 0.01),
+                                Text("18:00",
+                                    style: TextStyles.TITLE_16_BOLD),
+                                Image.asset('assets/images/clouds.png',
+                                    width: 50, height: 50),
+                                Text("26°C", style: TextStyles.TITLE_14_BOLD),
+                                SizedBox(height: Media.screenHeight * 0.006),
+                                Image.asset('assets/images/navigation_1.png',
+                                    width: 35, height: 35),
+                                SizedBox(height: Media.screenHeight * 0.003),
+                                Text("3km/h",
+                                    style: TextStyles.TITLE_14_BOLD),
+                              ]),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: Media.screenHeight * 0.01),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: Media.screenWidth / 4.83,
+                              height: Media.screenHeight / 4.56,
+                              decoration: BoxDecoration(
+                                  gradient: _themeManager.themeMode ==
+                                          ThemeMode.dark
+                                      ? backgroundGradientl
+                                      : backgroundGradientDark,
+                                  borderRadius: BorderRadius.circular(26)),
+                              child: Column(children: [
+                                SizedBox(height: Media.screenHeight * 0.01),
+                                Text("21:00",
+                                    style: TextStyles.TITLE_16_BOLD),
+                                Image.asset('assets/images/clouds.png',
+                                    width: 50, height: 50),
+                                Text("25°C", style: TextStyles.TITLE_14_BOLD),
+                                Image.asset('assets/images/navigation_3.png',
+                                    width: 43, height: 43),
+                                Text("3km/h",
+                                    style: TextStyles.TITLE_14_BOLD),
+                              ]),
+                            ),
+                            SizedBox(width: Media.screenHeight * 0.02),
+                            Container(
+                              width: Media.screenWidth / 4.83,
+                              height: Media.screenHeight / 4.56,
+                              decoration: BoxDecoration(
+                                  gradient: _themeManager.themeMode ==
+                                          ThemeMode.dark
+                                      ? backgroundGradientl
+                                      : backgroundGradientDark,
+                                  borderRadius: BorderRadius.circular(26)),
+                              child: Column(children: [
+                                SizedBox(height: Media.screenHeight * 0.01),
+                                Text("00:00",
+                                    style: TextStyles.TITLE_16_BOLD),
+                                Image.asset('assets/images/clouds.png',
+                                    width: 50, height: 50),
+                                Text("22°C", style: TextStyles.TITLE_14_BOLD),
+                                SizedBox(height: Media.screenHeight * 0.006),
+                                Image.asset('assets/images/navigation_1.png',
+                                    width: 35, height: 35),
+                                SizedBox(height: Media.screenHeight * 0.003),
+                                Text("3km/h",
+                                    style: TextStyles.TITLE_14_BOLD),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ]),
+                    ),
                     SizedBox(height: 15),
-                    Text(
-                      "Hourly Forecast:",
-                      style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 5),
-                          child: Container(
-                            width: 85,
-                            height: 170,
-                            decoration: BoxDecoration(
-                                gradient: _themeManager.themeMode == ThemeMode.dark? backgroundGradientl : backgroundGradientLight,
-                                borderRadius: BorderRadius.circular(26)),
-                            child: Column(children: [
-                              SizedBox(height: 15),
-                              Text("12:00",
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold)),
-                              Image.asset('assets/images/clear.png',
-                                  width: 50, height: 50),
-                              Text("26°C",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 5),
-                              Image.asset('assets/images/navigation_1.png',
-                                  width: 35, height: 35),
-                              SizedBox(height: 3),
-                              Text("3km/h",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                            ]),
-                          ),
-                        ),
-                        Container(
-                          width: 85,
-                          height: 170,
-                          decoration: BoxDecoration(
-                              gradient: _themeManager.themeMode == ThemeMode.dark? backgroundGradientl : backgroundGradientLight,
-                              borderRadius: BorderRadius.circular(26)),
-                          child: Column(children: [
-                            SizedBox(height: 15),
-                            Text("15:00",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                            Image.asset('assets/images/clear.png',
-                                width: 50, height: 50),
-                            Text("27°C",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
-                            Image.asset('assets/images/navigation_2.png',
-                                width: 43, height: 43),
-                            Text("2km/h",
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
-                          ]),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Container(
-                            width: 85,
-                            height: 170,
-                            decoration: BoxDecoration(
-                                gradient: _themeManager.themeMode == ThemeMode.dark? backgroundGradientl : backgroundGradientLight,
-                                borderRadius: BorderRadius.circular(26)),
-                            child: Column(children: [
-                              SizedBox(height: 15),
-                              Text("18:00",
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold)),
-                              Image.asset('assets/images/clouds.png',
-                                  width: 50, height: 50),
-                              Text("26°C",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 5),
-                              Image.asset('assets/images/navigation_1.png',
-                                  width: 35, height: 35),
-                              SizedBox(height: 3),
-                              Text("3km/h",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                            ]),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 68),
-                          child: Container(
-                            width: 85,
-                            height: 170,
-                            decoration: BoxDecoration(
-                                gradient: _themeManager.themeMode == ThemeMode.dark? backgroundGradientl : backgroundGradientDark,
-                                borderRadius: BorderRadius.circular(26)),
-                            child: Column(children: [
-                              SizedBox(height: 15),
-                              Text("21:00",
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold)),
-                              Image.asset('assets/images/clouds.png',
-                                  width: 50, height: 50),
-                              Text("25°C",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                              Image.asset('assets/images/navigation_3.png',
-                                  width: 43, height: 43),
-                              Text("3km/h",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                            ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Container(
-                            width: 85,
-                            height: 170,
-                            decoration: BoxDecoration(
-                                gradient: _themeManager.themeMode == ThemeMode.dark? backgroundGradientl : backgroundGradientDark,
-                                borderRadius: BorderRadius.circular(26)),
-                            child: Column(children: [
-                              SizedBox(height: 15),
-                              Text("00:00",
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold)),
-                              Image.asset('assets/images/clouds.png',
-                                  width: 50, height: 50),
-                              Text("22°C",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 5),
-                              Image.asset('assets/images/navigation_1.png',
-                                  width: 35, height: 35),
-                              SizedBox(height: 3),
-                              Text("3km/h",
-                                  style: TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.bold)),
-                            ]),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-        ],
-      )
-    );
+        ));
   }
 }
