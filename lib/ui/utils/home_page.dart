@@ -1,10 +1,15 @@
-import 'package:Wheather/Theme/text_style.dart';
-import 'package:Wheather/Theme/theme_cobstant.dart';
+import 'dart:convert';
+import 'package:Wheather/data/auth/model.dart';
+import 'package:http/http.dart' as http;
+import 'package:Wheather/data/daily_weather/model.dart';
+import 'package:Wheather/ui/styles/assets.dart';
+import 'package:Wheather/ui/styles/text_style.dart';
+import 'package:Wheather/ui/styles/constant.dart';
 import 'package:Wheather/media.dart';
 import 'package:Wheather/widgets/switch_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Theme/theme_manager.dart';
+import '../theme/theme_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,14 +17,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  WeatherData? weather;
   @override
   Widget build(BuildContext context) {
     ThemeManager _themeManager = Provider.of<ThemeManager>(context);
+    String minsk = "Minsk";
+    int today = DateTime.now().day;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: _themeManager.themeMode == ThemeMode.dark
-              ? COLOR_THEME_DARK
-              : COLOR_THEME_LIGHT,
+              ? AppPallete.COLOR_THEME_DARK
+              : AppPallete.COLOR_THEME_LIGHT,
           leading: SwitchWidget(
             value: _themeManager.themeMode == ThemeMode.dark,
             onChanged: (newValue) {
@@ -72,8 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 decoration: BoxDecoration(
                   gradient: _themeManager.themeMode == ThemeMode.dark
-                      ? backgroundScaffoldGradiendDark
-                      : backgroundScaffoldGradientLight,
+                      ? AppPallete.backgroundScaffoldGradiendDark
+                      : AppPallete.backgroundScaffoldGradientLight,
                 ),
                 child: Column(
                   children: [
@@ -85,14 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         decoration: BoxDecoration(
                           color: _themeManager.themeMode == ThemeMode.dark
-                              ? COLOR_THEME_DARK
-                              : COLOR_THEME_LIGHT,
+                              ? AppPallete.COLOR_THEME_DARK
+                              : AppPallete.COLOR_THEME_LIGHT,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(0,
                                   0), // Смещение тени по горизонтали и вертикали
                               blurRadius: 0.4, // Радиус размытия тени
@@ -100,8 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(0,
                                   8), // Смещение тени по горизонтали и вертикали
                               blurRadius: 4.0, // Радиус размытия тени
@@ -109,8 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(8,
                                   0), // Смещение тени по горизонтали и вертикали
                               blurRadius: 4.0, // Радиус размытия тени
@@ -120,17 +128,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Column(children: [
                           Text(
-                            "Athens",
+                            "$minsk",
                             style: TextStyles.TITLE_25_BOLD,
                           ),
                           SizedBox(height: Media.screenHeight * 0.01),
                           Text(
-                            '09:09',
+                            '9:09',
                             style: TextStyles.TITLE_60_BOLD,
                           ),
                           SizedBox(height: Media.screenHeight * 0.01),
                           Text(
-                            "Thursday, 31 Aug",
+                            "$today",
                             style: TextStyles.TITLE_15_BOLD,
                           ),
                         ]),
@@ -144,14 +152,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: 15, vertical: 4),
                         decoration: BoxDecoration(
                           color: _themeManager.themeMode == ThemeMode.dark
-                              ? COLOR_THEME_DARK
-                              : COLOR_THEME_LIGHT,
+                              ? AppPallete.COLOR_THEME_DARK
+                              : AppPallete.COLOR_THEME_LIGHT,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(0,
                                   0), // Смещение тени по горизонтали и вертикали
                               blurRadius: 4.0, // Радиус размытия тени
@@ -159,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(0,
                                   8), // Смещение тени по горизонтали и вертикали
                               blurRadius: 4.0, // Радиус размытия тени
@@ -168,8 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             BoxShadow(
                               color: _themeManager.themeMode == ThemeMode.dark
-                                  ? COLOR_BLOCK_DARK
-                                  : COLOR_BLOCK_LIGHT, // Цвет тени
+                                  ? AppPallete.COLOR_BLOCK_DARK
+                                  : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                               offset: Offset(8,
                                   0), // Смещение тени по горизонтали и вертикали
                               blurRadius: 4.0, // Радиус размытия тени
@@ -243,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               children: [
                                 Image.asset(
-                                  'assets/images/drizzle.png',
+                                  Assets.drizzle,
                                   width: 45,
                                   height: 45,
                                 ),
@@ -262,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               children: [
                                 Image.asset(
-                                  'assets/images/rain.png',
+                                  Assets.rain,
                                   width: 45,
                                   height: 45,
                                 ),
@@ -286,14 +294,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: Media.screenHeight / 1.83,
                       decoration: BoxDecoration(
                         color: _themeManager.themeMode == ThemeMode.dark
-                            ? COLOR_THEME_DARK
-                            : COLOR_THEME_LIGHT,
+                            ? AppPallete.COLOR_THEME_DARK
+                            : AppPallete.COLOR_THEME_LIGHT,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
                             color: _themeManager.themeMode == ThemeMode.dark
-                                ? COLOR_BLOCK_DARK
-                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                                ? AppPallete.COLOR_BLOCK_DARK
+                                : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                             offset: Offset(0,
                                 0), // Смещение тени по горизонтали и вертикали
                             blurRadius: 0.0, // Радиус размытия тени
@@ -301,8 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           BoxShadow(
                             color: _themeManager.themeMode == ThemeMode.dark
-                                ? COLOR_BLOCK_DARK
-                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                                ? AppPallete.COLOR_BLOCK_DARK
+                                : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                             offset: Offset(0,
                                 8), // Смещение тени по горизонтали и вертикали
                             blurRadius: 4.0, // Радиус размытия тени
@@ -310,8 +318,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           BoxShadow(
                             color: _themeManager.themeMode == ThemeMode.dark
-                                ? COLOR_BLOCK_DARK
-                                : COLOR_BLOCK_LIGHT, // Цвет тени
+                                ? AppPallete.COLOR_BLOCK_DARK
+                                : AppPallete.COLOR_BLOCK_LIGHT, // Цвет тени
                             offset: Offset(8,
                                 0), // Смещение тени по горизонтали и вертикали
                             blurRadius: 4.0, // Радиус размытия тени
@@ -335,18 +343,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                   gradient: _themeManager.themeMode ==
                                           ThemeMode.dark
-                                      ? backgroundGradientl
-                                      : backgroundGradientLight,
+                                      ? AppPallete.backgroundGradientl
+                                      : AppPallete.backgroundGradientLight,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
                                 Text("12:00",
                                     style: TextStyles.TITLE_16_BOLD),
-                                Image.asset('assets/images/clear.png',
+                                Image.asset(Assets.clear,
                                     width: 50, height: 50),
                                 Text("26°C", style: TextStyles.TITLE_14_BOLD),
                                 SizedBox(height: Media.screenHeight * 0.006),
-                                Image.asset('assets/images/navigation_1.png',
+                                Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
                                 Text("3km/h",
@@ -360,16 +368,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                   gradient:
                                       _themeManager.themeMode == ThemeMode.dark
-                                          ? backgroundGradientl
-                                          : backgroundGradientLight,
+                                          ? AppPallete.backgroundGradientl
+                                          : AppPallete.backgroundGradientLight,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
                                 Text("15:00", style: TextStyles.TITLE_16_BOLD),
-                                Image.asset('assets/images/clear.png',
+                                Image.asset(Assets.clear,
                                     width: 50, height: 50),
                                 Text("27°C", style: TextStyles.TITLE_14_BOLD),
-                                Image.asset('assets/images/navigation_2.png',
+                                Image.asset(Assets.arrow_left_up,
                                     width: 43, height: 43),
                                 Text("2km/h", style: TextStyles.TITLE_14_BOLD),
                               ]),
@@ -381,18 +389,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                   gradient: _themeManager.themeMode ==
                                           ThemeMode.dark
-                                      ? backgroundGradientl
-                                      : backgroundGradientLight,
+                                      ? AppPallete.backgroundGradientl
+                                      : AppPallete.backgroundGradientLight,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
                                 Text("18:00",
                                     style: TextStyles.TITLE_16_BOLD),
-                                Image.asset('assets/images/clouds.png',
+                                Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("26°C", style: TextStyles.TITLE_14_BOLD),
                                 SizedBox(height: Media.screenHeight * 0.006),
-                                Image.asset('assets/images/navigation_1.png',
+                                Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
                                 Text("3km/h",
@@ -411,17 +419,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                   gradient: _themeManager.themeMode ==
                                           ThemeMode.dark
-                                      ? backgroundGradientl
-                                      : backgroundGradientDark,
+                                      ? AppPallete.backgroundGradientl
+                                      : AppPallete.backgroundGradientDark,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
                                 Text("21:00",
                                     style: TextStyles.TITLE_16_BOLD),
-                                Image.asset('assets/images/clouds.png',
+                                Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("25°C", style: TextStyles.TITLE_14_BOLD),
-                                Image.asset('assets/images/navigation_3.png',
+                                Image.asset(Assets.arrow_right_up,
                                     width: 43, height: 43),
                                 Text("3km/h",
                                     style: TextStyles.TITLE_14_BOLD),
@@ -434,18 +442,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               decoration: BoxDecoration(
                                   gradient: _themeManager.themeMode ==
                                           ThemeMode.dark
-                                      ? backgroundGradientl
-                                      : backgroundGradientDark,
+                                      ? AppPallete.backgroundGradientl
+                                      : AppPallete.backgroundGradientDark,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
                                 Text("00:00",
                                     style: TextStyles.TITLE_16_BOLD),
-                                Image.asset('assets/images/clouds.png',
+                                Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("22°C", style: TextStyles.TITLE_14_BOLD),
                                 SizedBox(height: Media.screenHeight * 0.006),
-                                Image.asset('assets/images/navigation_1.png',
+                                Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
                                 Text("3km/h",

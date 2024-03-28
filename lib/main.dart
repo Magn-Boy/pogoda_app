@@ -1,9 +1,10 @@
 import 'package:Wheather/media.dart';
+import 'package:Wheather/ui/utils/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'Theme/theme_cobstant.dart';
-import 'Theme/theme_manager.dart';
-import 'utils/home_page.dart';
+import 'ui/styles/constant.dart';
+import 'ui/theme/theme_manager.dart';
+import 'ui/utils/home_page.dart';
 
 void main() {
   runApp(
@@ -19,10 +20,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Media.init(context);
     return MaterialApp(
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: AppPallete.lightTheme,
+      darkTheme: AppPallete.darkTheme,
       themeMode: Provider.of<ThemeManager>(context).themeMode,
-      home: HomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => AuthScreen(),
+        '/home':(context) => HomeScreen()
+      },
     );
   }
 } 
