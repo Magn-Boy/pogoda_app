@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:Wheather/data/auth/model.dart';
+import 'package:Wheather/data/auth/auth_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:Wheather/data/daily_weather/model.dart';
 import 'package:Wheather/ui/styles/assets.dart';
@@ -17,12 +17,44 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  WeatherData? weather;
+  WeatherForecast? weather;
   @override
   Widget build(BuildContext context) {
     ThemeManager _themeManager = Provider.of<ThemeManager>(context);
     String minsk = "Minsk";
     int today = DateTime.now().day;
+    final AuthToken _authToken = AuthToken();
+
+    Future<List<WeatherForecast>> fetchWeatherData() async {
+    try {
+      final token = await _authToken.getToken();
+      if (token == null) {
+        throw Exception('Token is null');
+      }
+
+      final response = await http.get(
+        Uri.parse('${_authToken.baseUrl}/getDailyWeather?city=Minsk'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        final List<WeatherForecast> weatherDataList = [];
+
+        for (final Map<String, dynamic> data in jsonData) {
+          weatherDataList.add(WeatherForecast.fromJson(data));
+        }
+        return weatherDataList;
+      } else {
+        print('Failed to load weather data: ${response.statusCode} - ${response.body}');
+        throw Exception('Failed to load weather data: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error fetching weather data: $error');
+      throw Exception('Failed to load weather data: $error');
+    }
+  }
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: _themeManager.themeMode == ThemeMode.dark
@@ -200,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 SizedBox(width: Media.screenWidth * 0.06),
                                 Text(
-                                  '23°C',
+                                  '${weather!.main.temp}',
                                   style: TextStyles.TITLE_18_BOLD,
                                 ),
                                 Spacer(),
@@ -341,15 +373,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: Media.screenWidth / 4.83,
                               height: Media.screenHeight / 4.56,
                               decoration: BoxDecoration(
-                                  gradient: _themeManager.themeMode ==
-                                          ThemeMode.dark
-                                      ? AppPallete.backgroundGradientl
-                                      : AppPallete.backgroundGradientLight,
+                                  gradient:
+                                      _themeManager.themeMode == ThemeMode.dark
+                                          ? AppPallete.backgroundGradientl
+                                          : AppPallete.backgroundGradientLight,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
-                                Text("12:00",
-                                    style: TextStyles.TITLE_16_BOLD),
+                                Text("12:00", style: TextStyles.TITLE_16_BOLD),
                                 Image.asset(Assets.clear,
                                     width: 50, height: 50),
                                 Text("26°C", style: TextStyles.TITLE_14_BOLD),
@@ -357,8 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
-                                Text("3km/h",
-                                    style: TextStyles.TITLE_14_BOLD),
+                                Text("3km/h", style: TextStyles.TITLE_14_BOLD),
                               ]),
                             ),
                             SizedBox(width: Media.screenWidth * 0.04),
@@ -387,15 +417,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: Media.screenWidth / 4.83,
                               height: Media.screenHeight / 4.56,
                               decoration: BoxDecoration(
-                                  gradient: _themeManager.themeMode ==
-                                          ThemeMode.dark
-                                      ? AppPallete.backgroundGradientl
-                                      : AppPallete.backgroundGradientLight,
+                                  gradient:
+                                      _themeManager.themeMode == ThemeMode.dark
+                                          ? AppPallete.backgroundGradientl
+                                          : AppPallete.backgroundGradientLight,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
-                                Text("18:00",
-                                    style: TextStyles.TITLE_16_BOLD),
+                                Text("18:00", style: TextStyles.TITLE_16_BOLD),
                                 Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("26°C", style: TextStyles.TITLE_14_BOLD),
@@ -403,8 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
-                                Text("3km/h",
-                                    style: TextStyles.TITLE_14_BOLD),
+                                Text("3km/h", style: TextStyles.TITLE_14_BOLD),
                               ]),
                             ),
                           ],
@@ -417,22 +445,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: Media.screenWidth / 4.83,
                               height: Media.screenHeight / 4.56,
                               decoration: BoxDecoration(
-                                  gradient: _themeManager.themeMode ==
-                                          ThemeMode.dark
-                                      ? AppPallete.backgroundGradientl
-                                      : AppPallete.backgroundGradientDark,
+                                  gradient:
+                                      _themeManager.themeMode == ThemeMode.dark
+                                          ? AppPallete.backgroundGradientl
+                                          : AppPallete.backgroundGradientDark,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
-                                Text("21:00",
-                                    style: TextStyles.TITLE_16_BOLD),
+                                Text("21:00", style: TextStyles.TITLE_16_BOLD),
                                 Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("25°C", style: TextStyles.TITLE_14_BOLD),
                                 Image.asset(Assets.arrow_right_up,
                                     width: 43, height: 43),
-                                Text("3km/h",
-                                    style: TextStyles.TITLE_14_BOLD),
+                                Text("3km/h", style: TextStyles.TITLE_14_BOLD),
                               ]),
                             ),
                             SizedBox(width: Media.screenHeight * 0.02),
@@ -440,15 +466,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: Media.screenWidth / 4.83,
                               height: Media.screenHeight / 4.56,
                               decoration: BoxDecoration(
-                                  gradient: _themeManager.themeMode ==
-                                          ThemeMode.dark
-                                      ? AppPallete.backgroundGradientl
-                                      : AppPallete.backgroundGradientDark,
+                                  gradient:
+                                      _themeManager.themeMode == ThemeMode.dark
+                                          ? AppPallete.backgroundGradientl
+                                          : AppPallete.backgroundGradientDark,
                                   borderRadius: BorderRadius.circular(26)),
                               child: Column(children: [
                                 SizedBox(height: Media.screenHeight * 0.01),
-                                Text("00:00",
-                                    style: TextStyles.TITLE_16_BOLD),
+                                Text("00:00", style: TextStyles.TITLE_16_BOLD),
                                 Image.asset(Assets.clouds,
                                     width: 50, height: 50),
                                 Text("22°C", style: TextStyles.TITLE_14_BOLD),
@@ -456,8 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Image.asset(Assets.arrow_up,
                                     width: 35, height: 35),
                                 SizedBox(height: Media.screenHeight * 0.003),
-                                Text("3km/h",
-                                    style: TextStyles.TITLE_14_BOLD),
+                                Text("3km/h", style: TextStyles.TITLE_14_BOLD),
                               ]),
                             ),
                           ],

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:Wheather/data/auth/model.dart';
+import 'package:Wheather/data/auth/auth_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:Wheather/ui/utils/home_page.dart';
@@ -46,13 +46,11 @@ class _FormContent extends StatefulWidget {
 class __FormContentState extends State<_FormContent> {
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
 
-  final ApiService _apiService = ApiService();
+  final AuthToken _authToken = AuthToken();
 
   Future<void> authenticate(String username, String password) async {
-    final String url = '${_apiService.baseUrl}/auth';
+    final String url = '${_authToken.baseUrl}/auth';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -73,9 +71,11 @@ class __FormContentState extends State<_FormContent> {
       if (response.statusCode == 200) {
         // Successfully authenticated
         Map<String, dynamic> responseData = jsonDecode(response.body);
-        String token = responseData[
-            'token']; // Assuming the response contains a 'token' field
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        String token = responseData['token'];
+        await _authToken.setToken(token);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        print('Completed sign in: $token');
       } else {
         // Authentication failed
         print('Failed to authenticate. Status code: ${response.statusCode}');
@@ -90,6 +90,7 @@ class __FormContentState extends State<_FormContent> {
 
   @override
   Widget build(BuildContext context) {
+    final model = AuthProvider.read(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -99,7 +100,7 @@ class __FormContentState extends State<_FormContent> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              controller: _usernameController,
+              controller: model?.model.loginTextController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter some text';
@@ -118,7 +119,7 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(),
             TextFormField(
-              controller: _passwordController,
+              controller: model?.model.passwordTextController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter some text';
@@ -146,32 +147,34 @@ class __FormContentState extends State<_FormContent> {
                   )),
             ),
             _gap(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4)),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text(
-                      'Sign in',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      final username = _usernameController.text;
-                      final password = _passwordController.text;
-                      await authenticate(username, password);
-                    }
-                  }),
-            ),
+            AuthButton(),
           ],
         ),
       ),
     );
+  }
+}
+
+class AuthButton extends StatelessWidget {
+  const AuthButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final model = AuthProvider.watch(context);
+    final onPressed = model?.model.canStartAuth == true ? () => model?.model.auth(): null;
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+            'Sign in',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        onPressed: onPressed);
   }
 }

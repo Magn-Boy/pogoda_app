@@ -1,3 +1,4 @@
+import 'package:Wheather/data/auth/auth_model.dart';
 import 'package:Wheather/media.dart';
 import 'package:Wheather/ui/utils/auth_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +26,9 @@ class MyApp extends StatelessWidget {
       themeMode: Provider.of<ThemeManager>(context).themeMode,
       initialRoute: '/',
       routes: {
-        '/': (context) => AuthScreen(),
-        '/home':(context) => HomeScreen()
+        '/': (context) => AuthProvider(model: AuthModel(), child: AuthScreen()),
+        '/home': (context) => HomeScreen()
       },
     );
   }
-} 
+}
